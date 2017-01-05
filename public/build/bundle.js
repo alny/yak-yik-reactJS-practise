@@ -21893,9 +21893,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _superagent = __webpack_require__(195);
-	
-	var _superagent2 = _interopRequireDefault(_superagent);
+	var _utils = __webpack_require__(202);
 	
 	var _Zone = __webpack_require__(193);
 	
@@ -21933,16 +21931,14 @@
 	      var _this2 = this;
 	
 	      console.log('componentDidMount: ');
-	
-	      _superagent2.default.get('/api/zone').query(null).set('Accept', 'application/json').end(function (err, response) {
+	      _utils.APIManager.get('/api/zone', null, function (err, response) {
 	        if (err) {
-	          alert('ERROR' + err);
+	          alert('ERROR' + err.message);
 	          return;
 	        }
-	        console.log(JSON.stringify(response.body));
-	        var results = response.body.results;
+	        console.log('RESULTS: ' + JSON.stringify(response.results));
 	        _this2.setState({
-	          list: results
+	          list: response.results
 	        });
 	      });
 	    }
@@ -21959,12 +21955,29 @@
 	  }, {
 	    key: 'addZone',
 	    value: function addZone() {
+	      var _this3 = this;
+	
 	      console.log('ADD ZONE' + JSON.stringify(this.state.zone));
-	      var updatedList = Object.assign([], this.state.list);
-	      updatedList.push(this.state.zone);
+	      var updatedZone = Object.assign({}, this.state.zone);
+	      updatedZone['zipCodes'] = updatedZone.zipCode;
+	      _utils.APIManager.post('/api/zone', updatedZone, function (err, response) {
+	        if (err) {
+	          alert('ERROR: ' + err.message);
+	          return;
+	        }
+	        console.log('ZONE CREATED' + JSON.stringify(response));
+	        var updatedList = Object.assign([], _this3.state.list);
+	        updatedList.push(response.result);
+	        _this3.setState({
+	          list: updatedList
+	        });
+	      });
+	
+	      /*let updatedList = Object.assign([], this.state.list)
+	      updatedList.push(this.state.zone)
 	      this.setState({
 	        list: updatedList
-	      });
+	      })*/
 	    }
 	  }, {
 	    key: 'render',
@@ -22022,6 +22035,8 @@
 	
 	var _Comment2 = _interopRequireDefault(_Comment);
 	
+	var _utils = __webpack_require__(202);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22049,6 +22064,23 @@
 	  }
 	
 	  _createClass(Comments, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+	
+	      console.log('componentDidMount: ');
+	      _utils.APIManager.get('/api/comment', null, function (err, response) {
+	        if (err) {
+	          alert('ERROR' + err.message);
+	          return;
+	        }
+	        console.log('RESULTS: ' + JSON.stringify(response.results));
+	        _this2.setState({
+	          list: response.results
+	        });
+	      });
+	    }
+	  }, {
 	    key: 'submitComment',
 	    value: function submitComment() {
 	      console.log('Hi from Submit Comment :-)' + JSON.stringify(this.state.comment));
@@ -24161,6 +24193,78 @@
 	  return header;
 	};
 
+
+/***/ },
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.APIManager = undefined;
+	
+	var _APIManager = __webpack_require__(203);
+	
+	var _APIManager2 = _interopRequireDefault(_APIManager);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.APIManager = _APIManager2.default;
+
+/***/ },
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _superagent = __webpack_require__(195);
+	
+	var _superagent2 = _interopRequireDefault(_superagent);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.default = {
+	  get: function get(url, params, callback) {
+	    _superagent2.default.get(url).query(params).set('Accept', 'application/json').end(function (err, response) {
+	      if (err) {
+	        callback(err, null);
+	        return;
+	      }
+	      var confirmation = response.body.confirmation;
+	      if (confirmation != 'success') {
+	        callback({ message: response.body.message }, null);
+	        return;
+	      }
+	      callback(null, response.body);
+	    });
+	  },
+	
+	  post: function post(url, body, callback) {
+	    _superagent2.default.post(url).send(body).set('Accept', 'application/json').end(function (err, response) {
+	      if (err) {
+	        callback(err, null);
+	        return;
+	      }
+	      var confirmation = response.body.confirmation;
+	      if (confirmation != 'success') {
+	        callback({ message: response.body.message }, null);
+	        return;
+	      }
+	      callback(null, response.body);
+	    });
+	  },
+	
+	  put: function put() {},
+	
+	  delete: function _delete() {}
+	
+	};
 
 /***/ }
 /******/ ]);
