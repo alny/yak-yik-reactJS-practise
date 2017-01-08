@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Comment, CreateComment} from '../presentations'
 import { APIManager } from '../../utils'
+import { connect } from 'react-redux'
+import actions from '../../actions/actions'
 
 class Comments extends Component {
     constructor(){
@@ -45,9 +47,12 @@ class Comments extends Component {
       <li key={i}><Comment currentComment={comment}/></li>
     )
   })
+  const selectedZone = this.props.zones[this.props.index]
+  const zoneName = (selectedZone == null ) ? '' : selectedZone.name
+
     return (
       <div>
-        <h1>Comment: Zone 1</h1>
+        <h1>{zoneName}</h1>
         <div style={{padding:12, background:'#f9f9f9', border:'1px solid #ddd'}}>
           <ul>
             {commentList}
@@ -58,4 +63,13 @@ class Comments extends Component {
     )
   }
 }
-export default Comments
+
+
+const stateToProps = (state) => {
+  return {
+    index: state.zone.selectedZone,
+    zones: state.zone.list
+  }
+}
+
+export default connect(stateToProps)(Comments)

@@ -13,5 +13,11 @@ export default {
       type: constants.ZONES_CREATED,
       zone: zone
     }
+  },
+  selectZone: (index) => {
+    return {
+      type: constants.SELECT_ZONE,
+      selectedZone: index
+    }
   }
 }
