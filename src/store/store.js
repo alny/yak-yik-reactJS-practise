@@ -7,7 +7,7 @@ var store;
 export default {
     configureStore: () => {
         const reducers = combineReducers({
-          zone: zoneReducer
+          zone: zoneReducer,
         })
 
         store = createStore(

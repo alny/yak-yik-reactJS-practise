@@ -21936,6 +21936,8 @@
 	  _createClass(Zones, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var _this2 = this;
+	
 	      console.log('componentDidMount: ');
 	      _utils.APIManager.get('/api/zone', null, function (err, response) {
 	        if (err) {
@@ -21943,29 +21945,28 @@
 	          return;
 	        }
 	        var zones = response.results;
-	        _store2.default.currentStore().dispatch(_actions2.default.zonesRecieved(zones));
-	
-	        /*this.setState({
-	          list: response.results
-	        })*/
+	        //store.currentStore().dispatch(actions.zonesRecieved(zones))
+	        _this2.props.zonesRecieved(zones);
 	      });
 	    }
 	  }, {
 	    key: 'addZone',
 	    value: function addZone(zone) {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      _utils.APIManager.post('/api/zone', zone, function (err, response) {
 	        if (err) {
 	          alert('ERROR: ' + err.message);
 	          return;
 	        }
-	        console.log('ZONE CREATED' + JSON.stringify(response));
-	        var updatedList = Object.assign([], _this2.state.list);
-	        updatedList.push(response.result);
-	        _this2.setState({
-	          list: updatedList
-	        });
+	        // console.log('ZONE CREATED' + JSON.stringify(response))
+	        var zone = response.result;
+	        _this3.props.zonesCreated(zone);
+	        /*  let updatedList = Object.assign([], this.state.list)
+	          updatedList.push(response.result)
+	          this.setState({
+	            list: updatedList
+	          })*/
 	      });
 	    }
 	  }, {
@@ -21979,14 +21980,14 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this3 = this;
+	      var _this4 = this;
 	
 	      var listItems = this.props.list.map(function (zone, i) {
-	        var selected = i == _this3.state.selected;
+	        var selected = i == _this4.state.selected;
 	        return _react2.default.createElement(
 	          'li',
 	          { key: i },
-	          _react2.default.createElement(_presentations.Zone, { index: i, select: _this3.selectZone.bind(_this3), isSelected: selected, currentZone: zone })
+	          _react2.default.createElement(_presentations.Zone, { index: i, select: _this4.selectZone.bind(_this4), isSelected: selected, currentZone: zone })
 	        );
 	      });
 	      return _react2.default.createElement(
@@ -22011,7 +22012,18 @@
 	  };
 	};
 	
-	exports.default = (0, _reactRedux.connect)(stateToProps)(Zones);
+	var dispatchToProps = function dispatchToProps(dispatch) {
+	  return {
+	    zonesRecieved: function zonesRecieved(zones) {
+	      return dispatch(_actions2.default.zonesRecieved(zones));
+	    },
+	    zonesCreated: function zonesCreated(zone) {
+	      return dispatch(_actions2.default.zonesCreated(zone));
+	    }
+	  };
+	};
+	
+	exports.default = (0, _reactRedux.connect)(stateToProps, dispatchToProps)(Zones);
 
 /***/ },
 /* 185 */
@@ -27030,7 +27042,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	      value: true
 	});
 	
 	var _constants = __webpack_require__(252);
@@ -27040,25 +27052,35 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var initialState = {
-	    list: []
+	      list: []
 	};
 	
 	exports.default = function () {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-	    var action = arguments[1];
+	      var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	      var action = arguments[1];
 	
 	
-	    switch (action.type) {
-	        case _constants2.default.ZONES_RECIEVED:
-	            console.log('ZONES_RECIEVED: ' + JSON.stringify(action.zones));
-	            var updated = Object.assign({}, state);
-	            updated['list'] = action.zones;
-	            return updated; // this is the equivalent to this.setState(...)
+	      var updated = Object.assign({}, state);
 	
-	        default:
-	            return state;
+	      switch (action.type) {
 	
-	    }
+	            case _constants2.default.ZONES_RECIEVED:
+	                  console.log('ZONES_RECIEVED: ' + JSON.stringify(action.zones));
+	                  updated['list'] = action.zones;
+	                  return updated; // this is the equivalent to this.setState(...)
+	
+	            case _constants2.default.ZONES_CREATED:
+	                  console.log('ZONES_CREATED: ' + JSON.stringify(action.zone));
+	                  var updatedList = Object.assign([], updated.list);
+	                  updatedList.push(action.zone);
+	                  updated['list'] = updatedList;
+	
+	                  return updated;
+	
+	            default:
+	                  return state;
+	
+	      }
 	};
 
 /***/ },
@@ -27072,7 +27094,8 @@
 	});
 	exports.default = {
 	
-	  ZONES_RECIEVED: 'ZONES_RECIEVED'
+	  ZONES_RECIEVED: 'ZONES_RECIEVED',
+	  ZONES_CREATED: 'ZONES_CREATED'
 	
 	};
 
@@ -27097,6 +27120,13 @@
 	    return {
 	      type: _constants2.default.ZONES_RECIEVED,
 	      zones: zones
+	    };
+	  },
+	
+	  zonesCreated: function zonesCreated(zone) {
+	    return {
+	      type: _constants2.default.ZONES_CREATED,
+	      zone: zone
 	    };
 	  }
 	};

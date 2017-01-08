@@ -21,11 +21,8 @@ class Zones extends Component {
           return
         }
         const zones = response.results
-        store.currentStore().dispatch(actions.zonesRecieved(zones))
-
-        /*this.setState({
-          list: response.results
-        })*/
+        //store.currentStore().dispatch(actions.zonesRecieved(zones))
+        this.props.zonesRecieved(zones)
       })
     }
 
@@ -35,14 +32,17 @@ class Zones extends Component {
           alert('ERROR: ' + err.message)
           return
         }
-        console.log('ZONE CREATED' + JSON.stringify(response))
-        let updatedList = Object.assign([], this.state.list)
+        // console.log('ZONE CREATED' + JSON.stringify(response))
+        const zone = response.result
+        this.props.zonesCreated(zone)
+      /*  let updatedList = Object.assign([], this.state.list)
         updatedList.push(response.result)
         this.setState({
           list: updatedList
-        })
+        })*/
       })
     }
+
     selectZone(index){
       console.log('selectZone' + index)
       this.setState({
@@ -75,5 +75,12 @@ const stateToProps = (state) => {
   }
 }
 
+const dispatchToProps = (dispatch) => {
+  return {
+    zonesRecieved: (zones) => dispatch(actions.zonesRecieved(zones)),
+    zonesCreated: (zone) => dispatch(actions.zonesCreated(zone))
+  }
+}
 
-export default connect(stateToProps)(Zones)
+
+export default connect(stateToProps, dispatchToProps)(Zones)
