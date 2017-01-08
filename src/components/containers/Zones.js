@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 import { APIManager } from '../../utils'
 import {Zone, CreateZone} from '../presentations';
+import { connect } from 'react-redux';
+import actions from '../../actions/actions'
+import store from '../../store/store'
 
 class Zones extends Component {
     constructor() {
         super()
         this.state = {
-            list: []
+            selected: 0,
         }
     }
 
@@ -17,20 +20,12 @@ class Zones extends Component {
           alert('ERROR' + err.message)
           return
         }
-        console.log('RESULTS: ' + JSON.stringify(response.results))
-        this.setState({
+        const zones = response.results
+        store.currentStore().dispatch(actions.zonesRecieved(zones))
+
+        /*this.setState({
           list: response.results
-        })
-      })
-    }
-
-
-    updateZone(event){
-      console.log('updateZone: ' + event.target.id + ' == ' + event.target.value)
-      let updatedZone = Object.assign({}, this.state.zone)
-      updatedZone[event.target.id] = event.target.value
-      this.setState({
-          zone: updatedZone
+        })*/
       })
     }
 
@@ -48,11 +43,18 @@ class Zones extends Component {
         })
       })
     }
+    selectZone(index){
+      console.log('selectZone' + index)
+      this.setState({
+        selected : index
+      })
+    }
 
     render() {
-      const listItems = this.state.list.map((zone, i) => {
+      const listItems = this.props.list.map((zone, i) => {
+      let selected = (i == this.state.selected)
         return (
-          <li key={i}><Zone currentZone={zone}/></li>
+          <li key={i}><Zone index={i} select={this.selectZone.bind(this)} isSelected={selected} currentZone={zone}/></li>
         )
       })
         return (
@@ -67,4 +69,11 @@ class Zones extends Component {
     }
 }
 
-export default Zones
+const stateToProps = (state) => {
+  return {
+    list: state.zone.list
+  }
+}
+
+
+export default connect(stateToProps)(Zones)

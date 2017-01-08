@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import {Comment, CreateComment} from '../presentations'
 import { APIManager } from '../../utils'
 
-
-
 class Comments extends Component {
     constructor(){
       super()
