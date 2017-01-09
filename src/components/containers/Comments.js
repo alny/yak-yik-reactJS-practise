@@ -3,46 +3,57 @@ import {Comment, CreateComment} from '../presentations'
 import { APIManager } from '../../utils'
 import { connect } from 'react-redux'
 import actions from '../../actions/actions'
+import store from '../../store/store'
+
 
 class Comments extends Component {
     constructor(){
       super()
       this.state = {
-          list: []
       }
-    }
-    componentDidMount(){
-      console.log('componentDidMount: ')
-      APIManager.get('/api/comment', null, (err, response) => {
-        if(err){
-          alert('ERROR' + err.message)
-          return
-        }
-        console.log('RESULTS: ' + JSON.stringify(response.results))
-        this.setState({
-          list: response.results
-        })
-      })
     }
 
     submitComment(comment){
       console.log('submitComment: ' + JSON.stringify(comment))
-      APIManager.post('/api/comment', comment, (err, response) => {
+      let updateComment = Object.assign({}, comment)
+
+      let zone = this.props.zones[this.props.index]
+      updateComment['zone'] = zone._id
+
+      APIManager.post('/api/comment', updateComment, (err, response) => {
           if(err){
             alert(err)
             return
           }
-          console.log(JSON.stringify(response));
-          let updatedList = Object.assign([], this.state.list)
-          updatedList.push(response.result)
-          this.setState({
-            list: updatedList
-          })
+          this.props.commentsCreated(response.result)
       })
     }
 
+  componentDidUpdate(){
+    let zone = this.props.zones[this.props.index]
+    if(zone == null){
+      console.log('NO SELECTED ZONE')
+      return
+    }
+
+    if (this.props.commentsLoaded == true)
+        return
+
+    APIManager.get('/api/comment', { zone: zone._id }, (err, response) => {
+      if(err){
+        alert('ERROR' + err.message)
+        return
+      }
+      //this.setState({ commentsLoaded: true })
+
+      let comments = response.results
+      this.props.commentsRecieved(comments)
+      })
+  }
+
+
   render(){
-  const commentList = this.state.list.map((comment, i) => {
+  const commentList = this.props.comments.map((comment, i) => {
     return (
       <li key={i}><Comment currentComment={comment}/></li>
     )
@@ -64,12 +75,20 @@ class Comments extends Component {
   }
 }
 
-
 const stateToProps = (state) => {
   return {
+    comments: state.comment.list,
+    commentsLoaded: state.comment.commentsLoaded,
     index: state.zone.selectedZone,
     zones: state.zone.list
   }
 }
 
-export default connect(stateToProps)(Comments)
+const dispatchToProps = (dispatch) => {
+    return {
+      commentsRecieved: (comments) => dispatch(actions.commentsRecieved(comments)),
+      commentsCreated: (comment) => dispatch(actions.commentsCreated(comment))
+    }
+}
+
+export default connect(stateToProps, dispatchToProps)(Comments)

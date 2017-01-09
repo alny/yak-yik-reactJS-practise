@@ -21,7 +21,6 @@ class Zones extends Component {
           return
         }
         const zones = response.results
-        //store.currentStore().dispatch(actions.zonesRecieved(zones))
         this.props.zonesRecieved(zones)
       })
     }
@@ -32,14 +31,8 @@ class Zones extends Component {
           alert('ERROR: ' + err.message)
           return
         }
-        // console.log('ZONE CREATED' + JSON.stringify(response))
         const zone = response.result
         this.props.zonesCreated(zone)
-      /*  let updatedList = Object.assign([], this.state.list)
-        updatedList.push(response.result)
-        this.setState({
-          list: updatedList
-        })*/
       })
     }
 
