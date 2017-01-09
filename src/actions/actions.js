@@ -1,10 +1,11 @@
 import constants from '../constants/constants'
 
 export default {
-  commentsRecieved: (comments) => {
+  commentsRecieved: (comments, zone) => {
     return {
       type: constants.COMMENTS_RECIEVED,
-      comments: comments
+      comments: comments,
+      zone: zone
     }
   },
   commentsCreated: (comment) => {

@@ -9,8 +9,7 @@ import store from '../../store/store'
 class Comments extends Component {
     constructor(){
       super()
-      this.state = {
-      }
+      this.state = {}
     }
 
     submitComment(comment){
@@ -25,7 +24,8 @@ class Comments extends Component {
             alert(err)
             return
           }
-          this.props.commentsCreated(response.result)
+          const comment = response.result
+          this.props.commentsRecieved([comment], zone)
       })
     }
 
@@ -36,7 +36,8 @@ class Comments extends Component {
       return
     }
 
-    if (this.props.commentsLoaded == true)
+    let commentsArray = this.props.commentsMap[zone._id]
+    if (commentsArray != null) // Comments have already been loaded
         return
 
     APIManager.get('/api/comment', { zone: zone._id }, (err, response) => {
@@ -44,22 +45,32 @@ class Comments extends Component {
         alert('ERROR' + err.message)
         return
       }
-      //this.setState({ commentsLoaded: true })
-
       let comments = response.results
-      this.props.commentsRecieved(comments)
+      this.props.commentsRecieved(comments, zone)
       })
   }
 
-
   render(){
-  const commentList = this.props.comments.map((comment, i) => {
-    return (
-      <li key={i}><Comment currentComment={comment}/></li>
-    )
-  })
-  const selectedZone = this.props.zones[this.props.index]
-  const zoneName = (selectedZone == null ) ? '' : selectedZone.name
+    const selectedZone = this.props.zones[this.props.index]
+
+    let zoneName = null
+    let commentList = null
+
+    if(selectedZone != null ){
+      zoneName = selectedZone.name
+
+      let zoneComments =  this.props.commentsMap[selectedZone._id]
+        if( zoneComments != null) {
+          commentList = zoneComments.map((comment, i) => {
+          return (
+            <li key={i}><Comment currentComment={comment}/></li>
+            )
+          })
+        }
+    }
+
+
+
 
     return (
       <div>
@@ -77,7 +88,8 @@ class Comments extends Component {
 
 const stateToProps = (state) => {
   return {
-    comments: state.comment.list,
+    //comments: state.comment.list,
+    commentsMap: state.comment.map,
     commentsLoaded: state.comment.commentsLoaded,
     index: state.zone.selectedZone,
     zones: state.zone.list
@@ -86,7 +98,7 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
     return {
-      commentsRecieved: (comments) => dispatch(actions.commentsRecieved(comments)),
+      commentsRecieved: (comments, zone) => dispatch(actions.commentsRecieved(comments, zone)),
       commentsCreated: (comment) => dispatch(actions.commentsCreated(comment))
     }
 }

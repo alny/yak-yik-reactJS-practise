@@ -26867,10 +26867,11 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	exports.default = {
-	  commentsRecieved: function commentsRecieved(comments) {
+	  commentsRecieved: function commentsRecieved(comments, zone) {
 	    return {
 	      type: _constants2.default.COMMENTS_RECIEVED,
-	      comments: comments
+	      comments: comments,
+	      zone: zone
 	    };
 	  },
 	  commentsCreated: function commentsCreated(comment) {
@@ -27058,6 +27059,8 @@
 	        value: true
 	});
 	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
 	var _constants = __webpack_require__(249);
 	
 	var _constants2 = _interopRequireDefault(_constants);
@@ -27065,8 +27068,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var initialState = {
-	        commentsLoaded: false,
-	        list: []
+	        map: {}
 	};
 	
 	exports.default = function () {
@@ -27076,32 +27078,49 @@
 	
 	        var updated = Object.assign({}, state);
 	
-	        switch (action.type) {
+	        var _ret = function () {
+	                switch (action.type) {
 	
-	                case _constants2.default.COMMENTS_RECIEVED:
-	                        updated['list'] = action.comments;
-	                        updated['commentsLoaded'] = true;
+	                        case _constants2.default.COMMENTS_RECIEVED:
+	                                console.log('COMMENTS_RECIEVED FROM ZONE: ' + JSON.stringify(action.zone));
 	
-	                        return updated;
+	                                var updatedMap = Object.assign({}, updated.map);
+	                                var zoneComments = updatedMap[action.zone._id] ? Object.assign([], updatedMap[action.zone._id]) : [];
 	
-	                case _constants2.default.COMMENTS_CREATED:
-	                        console.log('COMMENTS_CREATED: ' + JSON.stringify(action.comment));
-	                        var updatedList = Object.assign([], updated.list);
-	                        updatedList.push(action.comment);
-	                        updated['list'] = updatedList;
+	                                action.comments.forEach(function (comment, i) {
+	                                        zoneComments.push(comment);
+	                                });
+	                                updatedMap[action.zone._id] = zoneComments;
+	                                updated['map'] = updatedMap;
 	
-	                        return updated;
+	                                console.log('COMMENTS_RECIEVED:  ' + JSON.stringify(updated));
 	
-	                case _constants2.default.SELECT_ZONE:
-	                        updated['selectedZone'] = action.selectedZone;
-	                        updated['commentsLoaded'] = false;
+	                                return {
+	                                        v: updated
+	                                };
 	
-	                        return updated;
+	                        case _constants2.default.COMMENTS_CREATED:
+	                                console.log('COMMENTS_CREATED: ' + JSON.stringify(action.comment));
 	
-	                default:
-	                        return state;
+	                                return {
+	                                        v: updated
+	                                };
 	
-	        }
+	                        case _constants2.default.SELECT_ZONE:
+	
+	                                return {
+	                                        v: updated
+	                                };
+	
+	                        default:
+	                                return {
+	                                        v: state
+	                                };
+	
+	                }
+	        }();
+	
+	        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	};
 
 /***/ },
@@ -27170,7 +27189,8 @@
 	          alert(err);
 	          return;
 	        }
-	        _this2.props.commentsCreated(response.result);
+	        var comment = response.result;
+	        _this2.props.commentsRecieved([comment], zone);
 	      });
 	    }
 	  }, {
@@ -27184,31 +27204,41 @@
 	        return;
 	      }
 	
-	      if (this.props.commentsLoaded == true) return;
+	      var commentsArray = this.props.commentsMap[zone._id];
+	      if (commentsArray != null) // Comments have already been loaded
+	        return;
 	
 	      _utils.APIManager.get('/api/comment', { zone: zone._id }, function (err, response) {
 	        if (err) {
 	          alert('ERROR' + err.message);
 	          return;
 	        }
-	        //this.setState({ commentsLoaded: true })
-	
 	        var comments = response.results;
-	        _this3.props.commentsRecieved(comments);
+	        _this3.props.commentsRecieved(comments, zone);
 	      });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var commentList = this.props.comments.map(function (comment, i) {
-	        return _react2.default.createElement(
-	          'li',
-	          { key: i },
-	          _react2.default.createElement(_presentations.Comment, { currentComment: comment })
-	        );
-	      });
 	      var selectedZone = this.props.zones[this.props.index];
-	      var zoneName = selectedZone == null ? '' : selectedZone.name;
+	
+	      var zoneName = null;
+	      var commentList = null;
+	
+	      if (selectedZone != null) {
+	        zoneName = selectedZone.name;
+	
+	        var zoneComments = this.props.commentsMap[selectedZone._id];
+	        if (zoneComments != null) {
+	          commentList = zoneComments.map(function (comment, i) {
+	            return _react2.default.createElement(
+	              'li',
+	              { key: i },
+	              _react2.default.createElement(_presentations.Comment, { currentComment: comment })
+	            );
+	          });
+	        }
+	      }
 	
 	      return _react2.default.createElement(
 	        'div',
@@ -27237,7 +27267,8 @@
 	
 	var stateToProps = function stateToProps(state) {
 	  return {
-	    comments: state.comment.list,
+	    //comments: state.comment.list,
+	    commentsMap: state.comment.map,
 	    commentsLoaded: state.comment.commentsLoaded,
 	    index: state.zone.selectedZone,
 	    zones: state.zone.list
@@ -27246,8 +27277,8 @@
 	
 	var dispatchToProps = function dispatchToProps(dispatch) {
 	  return {
-	    commentsRecieved: function commentsRecieved(comments) {
-	      return dispatch(_actions2.default.commentsRecieved(comments));
+	    commentsRecieved: function commentsRecieved(comments, zone) {
+	      return dispatch(_actions2.default.commentsRecieved(comments, zone));
 	    },
 	    commentsCreated: function commentsCreated(comment) {
 	      return dispatch(_actions2.default.commentsCreated(comment));
