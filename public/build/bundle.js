@@ -21827,13 +21827,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Zones = __webpack_require__(184);
-	
-	var _Zones2 = _interopRequireDefault(_Zones);
-	
-	var _Comments = __webpack_require__(254);
-	
-	var _Comments2 = _interopRequireDefault(_Comments);
+	var _containers = __webpack_require__(255);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -21864,12 +21858,13 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'col-md-4' },
-	                        _react2.default.createElement(_Zones2.default, null)
+	                        _react2.default.createElement(_containers.Account, null),
+	                        _react2.default.createElement(_containers.Zones, null)
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'col-md-8' },
-	                        _react2.default.createElement(_Comments2.default, null)
+	                        _react2.default.createElement(_containers.Comments, null)
 	                    )
 	                )
 	            );
@@ -27287,6 +27282,155 @@
 	};
 	
 	exports.default = (0, _reactRedux.connect)(stateToProps, dispatchToProps)(Comments);
+
+/***/ },
+/* 255 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Zones = exports.Comments = exports.Account = undefined;
+	
+	var _Account = __webpack_require__(256);
+	
+	var _Account2 = _interopRequireDefault(_Account);
+	
+	var _Comments = __webpack_require__(254);
+	
+	var _Comments2 = _interopRequireDefault(_Comments);
+	
+	var _Zones = __webpack_require__(184);
+	
+	var _Zones2 = _interopRequireDefault(_Zones);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.Account = _Account2.default;
+	exports.Comments = _Comments2.default;
+	exports.Zones = _Zones2.default;
+
+/***/ },
+/* 256 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _utils = __webpack_require__(185);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Account = function (_Component) {
+	  _inherits(Account, _Component);
+	
+	  function Account() {
+	    _classCallCheck(this, Account);
+	
+	    var _this = _possibleConstructorReturn(this, (Account.__proto__ || Object.getPrototypeOf(Account)).call(this));
+	
+	    _this.state = {
+	      profile: {
+	        username: '',
+	        password: ''
+	      }
+	    };
+	    return _this;
+	  }
+	
+	  _createClass(Account, [{
+	    key: 'updateProfile',
+	    value: function updateProfile(event) {
+	      event.preventDefault();
+	      console.log(event.target.id + ' == ' + event.target.value);
+	      var updatedProfile = Object.assign({}, this.state.profile);
+	      updatedProfile[event.target.id] = event.target.value;
+	      this.setState({
+	        profile: updatedProfile
+	      });
+	    }
+	  }, {
+	    key: 'signUp',
+	    value: function signUp(event) {
+	      event.preventDefault();
+	      console.log(JSON.stringify(this.state.profile));
+	      if (this.state.profile.username.length == 0) {
+	        alert('Please Enter your Username');
+	        return;
+	      }
+	      if (this.state.profile.password.length == 0) {
+	        alert('Please Enter your Password');
+	        return;
+	      }
+	
+	      _utils.APIManager.post('/api/profile', this.state.profile, function (err, response) {
+	        if (err) {
+	          alert(err.message);
+	          return;
+	        }
+	        console.log(JSON.stringify(response));
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Login'
+	        ),
+	        _react2.default.createElement('input', { id: 'username', onChange: this.updateProfile.bind(this), className: 'form-control', type: 'text', placeholder: 'Username' }),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('input', { id: 'password', onChange: this.updateProfile.bind(this), className: 'form-control', type: 'text', placeholder: 'Password' }),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'button',
+	          { className: 'btn btn-primary' },
+	          'Log In'
+	        ),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Sign Up'
+	        ),
+	        _react2.default.createElement('input', { id: 'username', onChange: this.updateProfile.bind(this), className: 'form-control', type: 'text', placeholder: 'Username' }),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement('input', { id: 'password', onChange: this.updateProfile.bind(this), className: 'form-control', type: 'text', placeholder: 'Password' }),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'button',
+	          { onClick: this.signUp.bind(this), className: 'btn btn-primary' },
+	          'Sign Up'
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return Account;
+	}(_react.Component);
+	
+	exports.default = Account;
 
 /***/ }
 /******/ ]);
