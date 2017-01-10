@@ -23,6 +23,27 @@ updateProfile(event){
   })
 }
 
+logIn(event){
+  event.preventDefault()
+  console.log(JSON.stringify(this.state.profile))
+  if(this.state.profile.username.length == 0){
+    alert('Please Enter your Username')
+    return
+  }
+  if(this.state.profile.password.length == 0){
+    alert('Please Enter your Password')
+    return
+  }
+
+  APIManager.post('/account/login', this.state.profile, (err, response) => {
+      if(err){
+        alert(err.message)
+        return
+      }
+      console.log(JSON.stringify(response))
+  })
+}
+
 signUp(event){
   event.preventDefault()
   console.log(JSON.stringify(this.state.profile))
@@ -35,7 +56,7 @@ signUp(event){
     return
   }
 
-  APIManager.post('/api/profile', this.state.profile, (err, response) => {
+  APIManager.post('/account/register', this.state.profile, (err, response) => {
       if(err){
         alert(err.message)
         return
@@ -44,15 +65,13 @@ signUp(event){
   })
 }
 
-
-
   render(){
     return(
       <div>
           <h2>Login</h2>
           <input id="username" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Username"/><br/>
           <input id="password" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Password"/><br/>
-          <button className="btn btn-primary">Log In</button>
+          <button onClick={this.logIn.bind(this)} className="btn btn-primary">Log In</button>
           <br/>
           <h2>Sign Up</h2>
           <input id="username" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Username"/><br/>
