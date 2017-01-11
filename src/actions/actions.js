@@ -33,5 +33,11 @@ export default {
       type: constants.SELECT_ZONE,
       selectedZone: index
     }
+  },
+  currentUserRecieved: (user) => {
+    return {
+      type: constants.CURRENT_USER_RECIEVED,
+      user: user
+    }
   }
 }

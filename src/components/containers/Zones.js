@@ -3,7 +3,6 @@ import { APIManager } from '../../utils'
 import {Zone, CreateZone} from '../presentations';
 import { connect } from 'react-redux';
 import actions from '../../actions/actions'
-import store from '../../store/store'
 
 class Zones extends Component {
     constructor() {
@@ -26,7 +25,8 @@ class Zones extends Component {
     }
 
     addZone(zone){
-      APIManager.post('/api/zone', zone, (err, response) => {
+      let updatedZone = Object.assign({}, zone)
+      APIManager.post('/api/zone', updatedZone, (err, response) => {
         if(err){
           alert('ERROR: ' + err.message)
           return

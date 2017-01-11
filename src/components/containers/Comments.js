@@ -3,7 +3,6 @@ import {Comment, CreateComment} from '../presentations'
 import { APIManager } from '../../utils'
 import { connect } from 'react-redux'
 import actions from '../../actions/actions'
-import store from '../../store/store'
 
 
 class Comments extends Component {
@@ -13,11 +12,15 @@ class Comments extends Component {
     }
 
     submitComment(comment){
-      console.log('submitComment: ' + JSON.stringify(comment))
+      if(this.props.user == null){
+        alert('Please log in to comment')
+        return
+      }
       let updateComment = Object.assign({}, comment)
 
       let zone = this.props.zones[this.props.index]
       updateComment['zone'] = zone._id
+      updateComment['username'] = this.props.user.username
 
       APIManager.post('/api/comment', updateComment, (err, response) => {
           if(err){
@@ -92,7 +95,8 @@ const stateToProps = (state) => {
     commentsMap: state.comment.map,
     commentsLoaded: state.comment.commentsLoaded,
     index: state.zone.selectedZone,
-    zones: state.zone.list
+    zones: state.zone.list,
+    user: state.account.user
   }
 }
 

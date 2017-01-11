@@ -103,11 +103,8 @@ router.post('/:action', function(req, res, next){
 
           res.json({
             confirmation: 'success',
-            message: profile
+            user: profile
           })
-
-
-
       })
     }
 })

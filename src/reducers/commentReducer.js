@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
   switch(action.type) {
 
     case constants.COMMENTS_RECIEVED:
-        console.log('COMMENTS_RECIEVED FROM ZONE: ' + JSON.stringify(action.zone))
+      //  console.log('COMMENTS_RECIEVED FROM ZONE: ' + JSON.stringify(action.zone))
 
 
 
@@ -24,12 +24,12 @@ export default (state = initialState, action) => {
         updatedMap[action.zone._id] = zoneComments
         updated['map'] = updatedMap
 
-        console.log('COMMENTS_RECIEVED:  ' + JSON.stringify(updated))
+        //console.log('COMMENTS_RECIEVED:  ' + JSON.stringify(updated))
 
         return updated
 
     case constants.COMMENTS_CREATED:
-        console.log('COMMENTS_CREATED: ' + JSON.stringify(action.comment))
+        //console.log('COMMENTS_CREATED: ' + JSON.stringify(action.comment))
 
         return updated
 

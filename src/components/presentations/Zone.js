@@ -12,12 +12,12 @@ class Zone extends Component {
 
     render() {
       const zoneStyles = styles.zone
+      const zipCode = this.props.currentZone.zipCodes[0]
       const title = (this.props.isSelected) ? <a style={zoneStyles.nameAtag} href="#">{this.props.currentZone.name}</a> : <a href="#">{this.props.currentZone.name}</a>
         return (
-
             <div style={zoneStyles.container}>
                 <h2 onClick={this.onSelectTitle.bind(this)} style={zoneStyles.nameStyle}>{title}</h2>
-                <span className="detail">{this.props.currentZone.zipCodes}</span><br/>
+                <span className="detail">{zipCode}</span><br/>
                 <span className="detail">{this.props.currentZone.numComments}</span>
             </div>
 

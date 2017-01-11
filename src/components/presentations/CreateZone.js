@@ -21,7 +21,9 @@ updateZone(event){
 }
 
 submitZone(event){
-  this.props.onCreateZone(this.state.zone)
+  let updated = Object.assign({}, this.state.zone)
+  updated['zipCodes'] = updated.zipCode.split(',')
+  this.props.onCreateZone(updated)
 }
 
   render(){

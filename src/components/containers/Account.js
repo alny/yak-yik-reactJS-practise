@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { APIManager } from '../../utils'
+import { connect } from 'react-redux'
+import actions from '../../actions/actions'
 
 
 class Account extends Component {
@@ -11,6 +13,17 @@ class Account extends Component {
             password: ''
           }
       }
+  }
+
+  componentDidMount(){
+    APIManager.get('/account/currentuser', null, (err, response) => {
+      if(err){
+        //alert(err)
+        return
+      }
+        console.log(JSON.stringify(response))
+        this.props.currentUserRecieved(response.user)
+    })
   }
 
 updateProfile(event){
@@ -41,6 +54,7 @@ logIn(event){
         return
       }
       console.log(JSON.stringify(response))
+      this.props.currentUserRecieved(response.user)
   })
 }
 
@@ -62,11 +76,28 @@ signUp(event){
         return
       }
       console.log(JSON.stringify(response))
+      this.props.currentUserRecieved(response.user)
+  })
+}
+
+logOut(event){
+  event.preventDefault()
+  APIManager.get('/account/logout', null, (err, response) => {
+    if(err){
+      alert(err)
+      return
+    }
+    console.log('LOGGED OUT' + JSON.stringify(response))
+    this.props.currentUserRecieved(null)
+
   })
 }
 
   render(){
-    return(
+    //const greeting = (this.props.user == null) ? null : <h2>Welcome {this.props.user.username}</h2>
+    let content = null
+    if (this.props.user == null){
+      content = (
       <div>
           <h2>Login</h2>
           <input id="username" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Username"/><br/>
@@ -78,8 +109,32 @@ signUp(event){
           <input id="password" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Password"/><br/>
           <button onClick={this.signUp.bind(this)} className="btn btn-primary">Sign Up</button>
       </div>
+              )
+
+    } else {
+      content = <div>
+                  <h2>Welcome {this.props.user.username}</h2>
+                  <button onClick={this.logOut.bind(this)} className="btn btn-warning">Log Out</button>
+              </div>
+    }
+    return(
+      <div>
+        { content }
+      </div>
     )
   }
 }
 
-export default Account
+const stateToProps = (state) => {
+  return {
+    user: state.account.user
+  }
+}
+
+const dispatchToProps = (dispatch) => {
+    return {
+     currentUserRecieved: (user) => dispatch(actions.currentUserRecieved(user))
+   }
+}
+
+export default connect(stateToProps, dispatchToProps)(Account)

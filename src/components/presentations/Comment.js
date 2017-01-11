@@ -1,14 +1,16 @@
 import React, {Component} from 'react'
+import { Link } from 'react-router'
 
 class Comment extends Component {
   render(){
+    const currentComment = this.props.currentComment
     return (
 
       <div>
 
-        <b>{this.props.currentComment.username}</b>
-        <p>{this.props.currentComment.body}</p>
-        <p>{this.props.currentComment.timestamp}</p>
+        <b><Link to={'/profile/'+currentComment.username}>{currentComment.username}</Link></b>
+        <p>{currentComment.body}</p>
+        <p>{currentComment.timestamp}</p>
 
 
       </div>
