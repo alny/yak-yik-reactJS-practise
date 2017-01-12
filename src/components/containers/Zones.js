@@ -14,6 +14,8 @@ class Zones extends Component {
 
     componentDidMount(){
       console.log('componentDidMount: ')
+      this.props.fetchZones(null)
+/*
       APIManager.get('/api/zone', null, (err, response) => {
         if(err){
           alert('ERROR' + err.message)
@@ -21,7 +23,7 @@ class Zones extends Component {
         }
         const zones = response.results
         this.props.zonesRecieved(zones)
-      })
+      })*/
     }
 
     addZone(zone){
@@ -72,6 +74,7 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
   return {
+    fetchZones: (params) => dispatch(actions.fetchZones(params)),
     zonesRecieved: (zones) => dispatch(actions.zonesRecieved(zones)),
     zonesCreated: (zone) => dispatch(actions.zonesCreated(zone)),
     selectZone: (index) => dispatch(actions.selectZone(index))

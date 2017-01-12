@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { APIManager } from '../../utils'
 import { connect } from 'react-redux'
 import actions from '../../actions/actions'
+import { Link } from 'react-router'
 
 
 class Account extends Component {
@@ -10,7 +11,10 @@ class Account extends Component {
       this.state = {
           profile: {
             username: '',
-            password: ''
+            password: '',
+            city: '',
+            gender: ''
+
           }
       }
   }
@@ -106,7 +110,9 @@ logOut(event){
           <br/>
           <h2>Sign Up</h2>
           <input id="username" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Username"/><br/>
-          <input id="password" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Password"/><br/>
+          <input id="password" onChange={this.updateProfile.bind(this)} className="form-control" type="password" placeholder="Password"/><br/>
+          <input id="city" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="City"/><br/>
+          <input id="gender" onChange={this.updateProfile.bind(this)} className="form-control" type="text" placeholder="Gender"/><br/>
           <button onClick={this.signUp.bind(this)} className="btn btn-primary">Sign Up</button>
       </div>
               )
@@ -114,7 +120,9 @@ logOut(event){
     } else {
       content = <div>
                   <h2>Welcome {this.props.user.username}</h2>
+                  <h2>City {this.props.user.city}</h2>
                   <button onClick={this.logOut.bind(this)} className="btn btn-warning">Log Out</button>
+                  <Link to="/currentuser"><button className="btn btn-primary">Account</button></Link>
               </div>
     }
     return(

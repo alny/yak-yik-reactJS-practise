@@ -2,10 +2,6 @@ import React, {Component} from 'react'
 import { Profile } from '../containers'
 
 class ProfileInfo extends Component {
-
-  componentDidMount(){
-    console.log('componentDidMount'+JSON.stringify(this.props.params))
-  }
     render() {
         return (
             <div>

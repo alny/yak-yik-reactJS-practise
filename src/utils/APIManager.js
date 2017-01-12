@@ -35,12 +35,27 @@ export default {
         callback({message: response.body.message}, null)
         return
       }
-      callback(null, response.body)  
+      callback(null, response.body)
     })
   },
 
-  put: () => {
-
+  put: (url, body, callback) => {
+    superagent
+    .put(url)
+    .send(body)
+    .set('Accept', 'application/json')
+    .end((err, response) => {
+      if(err){
+        callback(err, null)
+        return
+      }
+      const confirmation = response.body.confirmation
+      if(confirmation != 'success'){
+        callback({message: response.body.message}, null)
+        return
+      }
+      callback(null, response.body)
+    })
   },
 
   delete: () => {

@@ -13,8 +13,6 @@ export default (state = initialState, action) => {
     case constants.COMMENTS_RECIEVED:
       //  console.log('COMMENTS_RECIEVED FROM ZONE: ' + JSON.stringify(action.zone))
 
-
-
         let updatedMap = Object.assign({}, updated.map)
         let zoneComments = (updatedMap[action.zone._id]) ? Object.assign([], updatedMap[action.zone._id]) : []
 
