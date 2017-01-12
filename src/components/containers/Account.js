@@ -120,7 +120,7 @@ logOut(event){
     } else {
       content = <div>
                   <h2>Welcome {this.props.user.username}</h2>
-                  <h2>City {this.props.user.city}</h2>
+                  <h2>Cityy {this.props.user.city}</h2>
                   <button onClick={this.logOut.bind(this)} className="btn btn-warning">Log Out</button>
                   <Link to="/currentuser"><button className="btn btn-primary">Account</button></Link>
               </div>

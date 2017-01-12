@@ -22112,7 +22112,7 @@
 	          _react2.default.createElement(
 	            'h2',
 	            null,
-	            'City ',
+	            'Cityy ',
 	            this.props.user.city
 	          ),
 	          _react2.default.createElement(
