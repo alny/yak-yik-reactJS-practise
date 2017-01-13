@@ -20,14 +20,7 @@ class Account extends Component {
   }
 
   componentDidMount(){
-    APIManager.get('/account/currentuser', null, (err, response) => {
-      if(err){
-        //alert(err)
-        return
-      }
-        console.log(JSON.stringify(response))
-        this.props.currentUserRecieved(response.user)
-    })
+
   }
 
 updateProfile(event){

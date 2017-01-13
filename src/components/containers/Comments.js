@@ -8,7 +8,11 @@ import actions from '../../actions/actions'
 class Comments extends Component {
     constructor(){
       super()
-      this.state = {}
+      this.checkForComments = this.checkForComments.bind(this)
+      this.state = {
+        commentsLoaded: false,
+        index: 0
+      }
     }
 
     submitComment(comment){
@@ -32,7 +36,7 @@ class Comments extends Component {
       })
     }
 
-  componentDidUpdate(){
+  checkForComments(){
     let zone = this.props.zones[this.props.index]
     if(zone == null){
       console.log('NO SELECTED ZONE')
@@ -53,8 +57,22 @@ class Comments extends Component {
       })
   }
 
+  componentDidMount(){
+    this.checkForComments()
+  }
+
+  componentDidUpdate(){
+    this.checkForComments()
+  }
+
+  updateComment(comment, updatedBody){
+      console.log('updateComment: ' + comment._id + ', ' + updatedBody)
+      this.props.updateComment(comment, {body: updatedBody})
+  }
+
   render(){
     const selectedZone = this.props.zones[this.props.index]
+    const currentUser = this.props.user // null if not logged in
 
     let zoneName = null
     let commentList = null
@@ -65,8 +83,14 @@ class Comments extends Component {
       let zoneComments =  this.props.commentsMap[selectedZone._id]
         if( zoneComments != null) {
           commentList = zoneComments.map((comment, i) => {
+            let editable = false
+            if(currentUser != null){
+              if(currentUser.username == comment.username)
+              editable = true
+            }
+
           return (
-            <li key={i}><Comment currentComment={comment}/></li>
+            <li key={i}><Comment onUpdate={this.updateComment.bind(this)} isEditable={editable} currentComment={comment}/></li>
             )
           })
         }
@@ -89,6 +113,7 @@ class Comments extends Component {
   }
 }
 
+// Get the state/data from the reducer and use it in the container
 const stateToProps = (state) => {
   return {
     //comments: state.comment.list,
@@ -99,11 +124,13 @@ const stateToProps = (state) => {
     user: state.account.user
   }
 }
-
+// Trigger the event to go to the actions
 const dispatchToProps = (dispatch) => {
     return {
       commentsRecieved: (comments, zone) => dispatch(actions.commentsRecieved(comments, zone)),
-      commentsCreated: (comment) => dispatch(actions.commentsCreated(comment))
+      commentsCreated: (comment) => dispatch(actions.commentsCreated(comment)),
+      updateComment: (comment, params) => dispatch(actions.updateComment(comment, params))
+
     }
 }
 

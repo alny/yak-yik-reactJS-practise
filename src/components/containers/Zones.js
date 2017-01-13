@@ -13,17 +13,6 @@ class Zones extends Component {
     }
 
     componentDidMount(){
-      console.log('componentDidMount: ')
-      this.props.fetchZones(null)
-/*
-      APIManager.get('/api/zone', null, (err, response) => {
-        if(err){
-          alert('ERROR' + err.message)
-          return
-        }
-        const zones = response.results
-        this.props.zonesRecieved(zones)
-      })*/
     }
 
     addZone(zone){
