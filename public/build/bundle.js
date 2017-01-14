@@ -26718,6 +26718,21 @@
 	      });
 	    };
 	  },
+	  fetchComments: function fetchComments(params) {
+	    return function (dispatch) {
+	      _utils.APIManager.get('/api/comment', params, function (err, response) {
+	        if (err) {
+	          console.log('ERROR: ' + err);
+	          return;
+	        }
+	        var comments = response.results;
+	        dispatch({
+	          type: _constants2.default.COMMENTS_RECIEVED,
+	          comments: comments
+	        });
+	      });
+	    };
+	  },
 	  commentsRecieved: function commentsRecieved(comments, zone) {
 	    return {
 	      type: _constants2.default.COMMENTS_RECIEVED,
@@ -32675,7 +32690,12 @@
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      var profile = this.props.profile[this.props.username];
-	      if (profile != null) return;
+	      if (profile != null) {
+	        this.props.fetchComments({ username: profile.username });
+	
+	        return;
+	      }
+	
 	      this.props.fetchProfile({ username: this.props.username });
 	    }
 	  }, {
@@ -32727,6 +32747,7 @@
 	
 	var stateToProps = function stateToProps(state) {
 	  return {
+	    comment: state.comment.profileMap,
 	    profile: state.profile.map,
 	    appStatus: state.profile.appStatus
 	  };
@@ -32736,7 +32757,11 @@
 	  return {
 	    fetchProfile: function fetchProfile(params) {
 	      return dispatch(_actions2.default.fetchProfile(params));
+	    },
+	    fetchComments: function fetchComments(params) {
+	      return dispatch(_actions2.default.fetchComments(params));
 	    }
+	
 	  };
 	};
 	
@@ -33143,7 +33168,8 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var initialState = {
-	        map: {}
+	        map: {},
+	        profileMap: {}
 	};
 	
 	exports.default = function () {
@@ -33153,6 +33179,7 @@
 	
 	        var updated = Object.assign({}, state);
 	        var updatedMap = Object.assign({}, updated.map);
+	        var updatedProfileMap = Object.assign({}, updated.profileMap);
 	
 	        var _ret = function () {
 	                switch (action.type) {
@@ -33168,8 +33195,14 @@
 	                                updatedMap[action.zone._id] = zoneComments;
 	                                updated['map'] = updatedMap;
 	
+	                                action.comments.forEach(function (comment, i) {
+	                                        var profileComments = updatedProfileMap[comment.username] ? updatedProfileMap[comment.username] : [];
+	                                        profileComments.push(comment);
+	                                        updatedProfileMap[comment.username] = profileComments;
+	                                });
 	                                //console.log('COMMENTS_RECIEVED:  ' + JSON.stringify(updated))
-	
+	                                updated['map'] = updatedProfileMap;
+	                                console.log('PROFILE MAP: ' + JSON.stringify(updatedProfileMap));
 	                                return {
 	                                        v: updated
 	                                };

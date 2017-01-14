@@ -24,8 +24,9 @@ var account = require('./routes/account');
 
 
 var app = express();
-
 // view engine setup
+
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -37,7 +38,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sessions({
   cookieName: 'session',
-  secret: 'iueartibeg',
+  secret: 'iueartikjhkjkkkkkbeg',
   duration: 24*60*60*1000,
   activeDuration: 30*60*1000
 }))

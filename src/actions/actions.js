@@ -28,6 +28,21 @@ export default {
     })
   }
   },
+  fetchComments: (params) => { 
+    return (dispatch) => {
+    APIManager.get('/api/comment', params, (err, response) => {
+      if(err){
+        console.log('ERROR: '+err)
+        return
+      }
+      const comments = response.results
+      dispatch({
+        type: constants.COMMENTS_RECIEVED,
+        comments: comments
+      })
+    })
+  }
+  },
   commentsRecieved: (comments, zone) => {
     return {
       type: constants.COMMENTS_RECIEVED,

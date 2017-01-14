@@ -91,6 +91,7 @@ var Profile = (function (Component) {
 
 var stateToProps = function (state) {
   return {
+    comment: state.comment.map,
     profile: state.profile.map,
     appStatus: state.profile.appStatus
   };

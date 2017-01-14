@@ -5,7 +5,8 @@ var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["defau
 var constants = _interopRequire(require("../constants/constants"));
 
 var initialState = {
-        map: {}
+        map: {},
+        profileMap: {}
 };
 
 module.exports = function (_x, action) {
@@ -28,6 +29,11 @@ module.exports = function (_x, action) {
                         });
                         updatedMap[action.zone._id] = zoneComments;
                         updated.map = updatedMap;
+
+                        action.comments.forEach(function (comment, i) {
+                                var profileComments = updatedProfileMap[comment.username] ? updatedProfileMap[comment.username] : [];
+                                zoneComments.push(comment);
+                        });
 
                         //console.log('COMMENTS_RECIEVED:  ' + JSON.stringify(updated))
 

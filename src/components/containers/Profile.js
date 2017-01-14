@@ -12,8 +12,13 @@ class Profile extends Component {
 
   componentDidMount(){
     let profile = this.props.profile[this.props.username]
-    if(profile != null)
-        return
+    if(profile != null){
+      this.props.fetchComments({username: profile.username})
+
+      return
+
+    }
+
     this.props.fetchProfile({username: this.props.username})
   }
 
@@ -29,7 +34,6 @@ class Profile extends Component {
 
         </div>
       )
-
     }
 
     const content = (this.props.appStatus == 'loading') ? 'Loading...' : header
@@ -38,13 +42,13 @@ class Profile extends Component {
         <h2>This is the Profile Page</h2>
         {content}
       </div>
-
     )
   }
 }
 
 const stateToProps = (state) => {
   return {
+      comment: state.comment.profileMap,
       profile: state.profile.map,
       appStatus: state.profile.appStatus
   }
@@ -52,7 +56,9 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
   return {
-    fetchProfile: (params) => dispatch(actions.fetchProfile(params))
+    fetchProfile: (params) => dispatch(actions.fetchProfile(params)),
+    fetchComments: (params) => dispatch(actions.fetchComments(params))
+
   }
 }
 

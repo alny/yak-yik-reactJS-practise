@@ -1,13 +1,16 @@
 import constants from '../constants/constants'
 
 var initialState = {
-    map: {}
+    map: {},
+    profileMap: {}
 }
 
 export default (state = initialState, action) => {
 
   let updated = Object.assign({}, state)
   let updatedMap = Object.assign({}, updated.map)
+  let updatedProfileMap = Object.assign({}, updated.profileMap)
+
 
 
   switch(action.type) {
@@ -23,8 +26,14 @@ export default (state = initialState, action) => {
         updatedMap[action.zone._id] = zoneComments
         updated['map'] = updatedMap
 
+        action.comments.forEach((comment, i) => {
+            let profileComments = (updatedProfileMap[comment.username]) ? updatedProfileMap[comment.username] : []
+              profileComments.push(comment)
+              updatedProfileMap[comment.username] = profileComments
+        })
         //console.log('COMMENTS_RECIEVED:  ' + JSON.stringify(updated))
-
+        updated['map'] = updatedProfileMap
+        console.log('PROFILE MAP: ' + JSON.stringify(updatedProfileMap))
         return updated
 
     case constants.COMMENTS_CREATED:

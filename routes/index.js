@@ -14,6 +14,8 @@ var ReactDOMServer = require('react-dom/server')
 var serverapp = require('../public/build/es5/serverapp')
 var store = require('../public/build/es5/store/store')
 var Home = require('../public/build/es5/components/layout/Home')
+var ProfileInfo = require('../public/build/es5/components/layout/ProfileInfo')
+
 
 
 matchRoutes = function(req, routes){
@@ -64,16 +66,11 @@ router.get('/', function(req, res, next) {
             }
         }
 
-        matchRoutes(req, routes)
-          .then(function(renderProps){
-            var html = ReactDOMServer.renderToString(React.createElement(ReactRouter.RouterContext, renderProps))
-            console.log('TEST 1 ' + html)
-            res.render('index', { react: html, preloadedState:JSON.stringify(initialStore.getState()) });
-
-          })
-          .catch(function(err){
-            console.log('TEST 2 ' + err)
-          })
+        return matchRoutes(req, routes)
+      })
+      .then(function(renderProps){
+        var html = ReactDOMServer.renderToString(React.createElement(ReactRouter.RouterContext, renderProps))
+        res.render('index', { react: html, preloadedState:JSON.stringify(initialStore.getState()) });
       })
       .catch(function(err){
         console.log('NOT LOGGED IN')
@@ -83,6 +80,52 @@ router.get('/', function(req, res, next) {
 
 });
 
+
+router.get('/:page/:slug', function(req, res, next){
+  var page = req.params.page
+  var slug = req.params.slug
+
+  var initialStore = null
+  var reducers = {}
+
+  if(page == 'api'){
+    next()
+    return
+}
+
+  controllers.profile.get({username: slug})
+  .then(function(profiles){
+    var profile = profiles[0]
+    var profileMap = {}
+    profileMap[slug] = profile
+
+    reducers['profile'] = {
+      list: [profile],
+      map: profileMap,
+      appStatus: 'ready'
+    }
+    initialStore = store.configureStore(reducers)
+
+    var routes = {
+        path: '/profile/:username',
+        component: serverapp,
+        initial: initialStore,
+        indexRoute: {
+              component: ProfileInfo
+        }
+    }
+    return matchRoutes(req, routes)
+  })
+  .then(function(renderProps){
+    var html = ReactDOMServer.renderToString(React.createElement(ReactRouter.RouterContext, renderProps))
+    res.render('index', { react: html, preloadedState:JSON.stringify(initialStore.getState()) });
+  })
+  .catch(function(err){
+
+  })
+});
+
+
 router.get('/createzone', function(req, res, next){
   res.render('createzone');
 });
@@ -90,5 +133,6 @@ router.get('/createzone', function(req, res, next){
 router.get('/createcomment', function(req, res, next){
   res.render('createcomment');
 });
+  
 
 module.exports = router;
